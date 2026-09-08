@@ -1,0 +1,30 @@
+# 给工作流起个名字
+name: 生活助理
+
+# 触发条件：这里使用 schedule 实现定时触发
+on:
+  schedule:
+    # cron 语法：'分钟 小时 日 月 星期'
+    # '0 5 * * *' 代表每天的 05:00 (UTC时间) 运行
+    # UTC 时间 05:00 对应北京时间 13:00 (注意，夏令时可能会有一小时偏差)
+    - cron: '0 5 * * *'
+  # 加上这个，可以让你在 Actions 页面手动点击运行，方便测试
+  workflow_dispatch:
+
+jobs:
+  send-notification:
+    # 运行环境：使用最新的 Ubuntu 系统
+    runs-on: ubuntu-latest
+    steps:
+      # 第一步：从 GitHub Marketplace 找到现成的 Pushover 工具来用
+      - name: Send Pushover Notification
+        uses: umahmood/pushover-actions@main
+        env:
+          # 从仓库的 Secrets 中读取我们之前存好的密钥
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
+        with:
+          # 这里就是我们要发送的消息内容
+          message: '主人，记得吃维C啊！ 🌞'
+          # 还可以加上一个标题，让通知更醒目
+          title: '🍊 每日提醒'
