@@ -33,7 +33,7 @@ jobs:
 
           # 目标时间：13:00（允许前后 5 分钟误差，应对 GitHub 的 cron 延迟）
           TARGET_HOUR=13
-          TARGET_MINUTE_START=0   # 允许 13:00 到 13:05
+          TARGET_MINUTE_START=35   # 允许 13:00 到 13:05
           TARGET_MINUTE_END=5
 
           # 判断是否在目标时间窗口内
