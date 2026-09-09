@@ -15,12 +15,14 @@ jobs:
     steps:
       # 使用现成的 Pushover Action，不需要拉取代码
       - name: 发送 Pushover 通知
-        uses: umahmood/pushover-actions@main
         env:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
-        with:
-          message: '主人主人！🍊 维C时间到！再不吃就要变成橘子干啦！'
-          title: '🧐 维C时间'
-          # 可选：添加声音提醒
-          sound: 'magic'
+        run: |
+          curl -s \
+            -F "token=$PUSHOVER_TOKEN" \
+            -F "user=$PUSHOVER_USER" \
+            -F "title=🍊 维C时间到！" \
+            -F "message=主人主人！🥺 再不吃维C就要变成橘子干啦！快去吃一片～" \
+            -F "sound=pushover" \
+            https://api.pushover.net/1/messages.json
