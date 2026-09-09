@@ -2,17 +2,17 @@ name: 每日维C提醒
 
 on:
   schedule:
-    # UTC 时间 05:00 = 北京时间 13:00
+    # UTC 时间 05:30 = 北京时间 13:30
     # 但为了更精准，我们用 cron 探测 + 时间门卫双重保险
-    - cron: '0 5 * * *'
+    - cron: '30 5 * * *'
     # 再加一个备用探测，防止第一次触发失败（比如 GitHub 队列延迟）
-    - cron: '5 5 * * *'
+    - cron: '40 5 * * *'
   workflow_dispatch:  # 保留手动触发，方便测试
 
 jobs:
-  # 1. 时间门卫：确认是否真的是北京时间 13:00
+  # 1. 时间门卫：确认是否真的是北京时间 13:30
   gate:
-    name: 确认北京时间 13:00
+    name: 确认北京时间 13:30-50
     runs-on: ubuntu-latest
     outputs:
       should-run: ${{ steps.check.outputs.should-run }}
@@ -33,12 +33,12 @@ jobs:
 
           # 目标时间：13:00（允许前后 5 分钟误差，应对 GitHub 的 cron 延迟）
           TARGET_HOUR=13
-          TARGET_MINUTE_START=35   # 允许 13:00 到 13:05
-          TARGET_MINUTE_END=5
+          TARGET_MINUTE_START=30   # 允许 13:30 到 13:50
+          TARGET_MINUTE_END=50
 
           # 判断是否在目标时间窗口内
           if [ "$NOW_HOUR" -eq "$TARGET_HOUR" ] && [ "$NOW_MINUTE" -ge "$TARGET_MINUTE_START" ] && [ "$NOW_MINUTE" -le "$TARGET_MINUTE_END" ]; then
-            echo "✓ 匹配！北京时间 13:00-13:05，执行提醒。"
+            echo "✓ 匹配！北京时间 13:30-13:50，执行提醒。"
             echo "should-run=true" >> "$GITHUB_OUTPUT"
           else
             echo "✗ 不在发送窗口内，跳过本次触发。"
