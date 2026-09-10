@@ -1,7 +1,7 @@
 name: 每日维C提醒
  
 on:
-  schedule:
+  # schedule:
     # UTC 时间 05:00 = 北京时间 13:00
     # - cron: '0 5 * * *'
     # 由cron-job自动触发，避免时间不准
@@ -20,10 +20,23 @@ jobs:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
         run: |
-          curl -s \
+         response=$(curl -s -w "\n%{http_code}" \
             -F "token=$PUSHOVER_TOKEN" \
             -F "user=$PUSHOVER_USER" \
             -F "title=🍊 维C时间到！" \
             -F "message=主人主人！🥺 再不吃维C就要变成橘子干啦！快去吃一片～" \
             -F "sound=Classical" \
             https://api.pushover.net/1/messages.json
+
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | sed '$d')
+
+          echo "HTTP 状态码: $http_code"
+          echo "响应内容: $body"
+
+          if [ "$http_code" != "200" ]; then
+            echo "❌ Pushover 发送失败"
+            exit 1
+          fi
+
+          echo "✅ 通知发送成功"
