@@ -20,7 +20,9 @@ jobs:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
         run: |
-         response=$(curl -s -w "\n%{http_code}" \
+          set -e
+
+          http_code=$(curl -s -o /tmp/pushover_body.txt -w '%{http_code}' \
             -F "token=$PUSHOVER_TOKEN" \
             -F "user=$PUSHOVER_USER" \
             -F "title=🍊 维C时间到！" \
@@ -28,11 +30,8 @@ jobs:
             -F "sound=Classical" \
             https://api.pushover.net/1/messages.json
 
-          http_code=$(echo "$response" | tail -n1)
-          body=$(echo "$response" | sed '$d')
-
           echo "HTTP 状态码: $http_code"
-          echo "响应内容: $body"
+          echo "响应内容: $(cat /tmp/pushover_body.txt)"
 
           if [ "$http_code" != "200" ]; then
             echo "❌ Pushover 发送失败"
