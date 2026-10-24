@@ -1,20 +1,27 @@
-name: 每日维C提醒
- 
+name: 每日提醒合集
+
 on:
-  # schedule:
-    # UTC 时间 05:00 = 北京时间 13:00
-    # - cron: '0 5 * * *'
-    # 由cron-job自动触发，避免时间不准
-  workflow_dispatch:  # 保留手动触发，方便测试
+  # schedule 全部注释，由 cron-job.org 触发
+  # - cron: '0 5 * * *'    # 维C：每天 UTC 05:00 = 北京 13:00
+  # - cron: '30 4 15 * *'  # iPad：每月15日 UTC 05:00 = 北京 13:00
+  workflow_dispatch:
+    inputs:
+      task:
+        description: '选择要发送的提醒'
+        type: choice
+        required: true
+        default: vitamin-c
+        options:
+          - vitamin-c     # 每日维C提醒
+          - ipad-photo    # 每月iPad图片更换提醒
+          - both          # 两个都发（测试用）
 
 jobs:
- # 发送消息
-  send-reminder:
+  vitamin-c:
     name: 发送维C提醒
     runs-on: ubuntu-latest
-    
+    if: inputs.task == 'vitamin-c' || inputs.task == 'both'
     steps:
-      # 使用现成的 Pushover Action，不需要拉取代码
       - name: 发送 Pushover 通知
         env:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
@@ -25,5 +32,23 @@ jobs:
             -F "user=$PUSHOVER_USER" \
             -F "title=🍊 维C时间到！" \
             -F "message=主人主人！🥺 再不吃维C就要变成橘子干啦！快去吃一片～" \
+            -F "sound=Classical" \
+            https://api.pushover.net/1/messages.json
+
+  ipad-photo:
+    name: 发送 iPad 图片更换提醒
+    runs-on: ubuntu-latest
+    if: inputs.task == 'ipad-photo' || inputs.task == 'both'
+    steps:
+      - name: 发送 Pushover 通知
+        env:
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
+        run: |
+          curl -s \
+            -F "token=$PUSHOVER_TOKEN" \
+            -F "user=$PUSHOVER_USER" \
+            -F "title=📱 更换 iPad 图片时间到！" \
+            -F "message=主人主人！🥺 又到每月 15 号啦，记得去更换 iPad 上的图片哦～" \
             -F "sound=Classical" \
             https://api.pushover.net/1/messages.json
