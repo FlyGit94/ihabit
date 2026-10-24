@@ -48,7 +48,7 @@ jobs:
           curl -s \
             -F "token=$PUSHOVER_TOKEN" \
             -F "user=$PUSHOVER_USER" \
-            -F "title=📱 更换 iPad 图片时间到！" \
-            -F "message=主人主人！🥺 又到每月 15 号啦，记得去更换 iPad 上的图片哦～" \
+            -F "title=🌊 换图时间到！" \
+            -F "message=帅气的主人！🥺 要记得去 ipad 下载最新的摄影哦～" \
             -F "sound=Classical" \
             https://api.pushover.net/1/messages.json
